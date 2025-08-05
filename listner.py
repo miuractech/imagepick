@@ -10,7 +10,7 @@ WATCHED_DIR = "/home/sanjeevexop1/test"
 def on_new_folder(folder_path):
     print(f"New folder created: {folder_path}")
     # You can run your actual script here
-    # For example: os.system(f"python3 your_script.py {folder_path}")
+    os.system(f"python3 ./your_script.py")
     # Or call a function directly
 
 class FolderCreationHandler(FileSystemEventHandler):
