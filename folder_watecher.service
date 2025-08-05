@@ -1,0 +1,13 @@
+[Unit]
+Description=Start folder watcher on boot
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/sanjeevexpo1/imagepick/test_execute.py
+WorkingDirectory=/home/sanjeevexpo1/imagepick 
+StandardOutput=journal
+Restart=always
+User=sanjeevexpo1
+
+[Install]
+WantedBy=multi-user.target
