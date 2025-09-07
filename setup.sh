@@ -11,12 +11,20 @@ fi
 echo "Updating package lists..."
 apt-get update
 
-# Install python3-watchdog and postgresql-client
-echo "Installing python3-watchdog and postgresql-client..."
-apt-get install -y python3-watchdog postgresql-client
+# Install required packages
+echo "Installing required packages..."
+apt-get install -y \
+  python3-watchdog \
+  postgresql-client \
+  git \
+  curl \
+  jq \
+  sqlite3 \
+  unzip \
+  ca-certificates \
 
-# Check if both packages were installed successfully
-for pkg in python3-watchdog postgresql-client; do
+# Check if all packages were installed successfully
+for pkg in python3-watchdog postgresql-client git curl jq sqlite3 unzip ca-certificates python3-venv python3-pip; do
   if dpkg -s "$pkg" >/dev/null 2>&1; then
     echo "$pkg installed successfully."
   else
