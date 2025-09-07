@@ -21,10 +21,10 @@ apt-get install -y \
   jq \
   sqlite3 \
   unzip \
-  ca-certificates \
+  ca-certificates
 
 # Check if all packages were installed successfully
-for pkg in python3-watchdog postgresql-client git curl jq sqlite3 unzip ca-certificates python3-venv python3-pip; do
+for pkg in python3-watchdog postgresql-client git curl jq sqlite3 unzip ca-certificates; do
   if dpkg -s "$pkg" >/dev/null 2>&1; then
     echo "$pkg installed successfully."
   else
@@ -32,3 +32,25 @@ for pkg in python3-watchdog postgresql-client git curl jq sqlite3 unzip ca-certi
     exit 1
   fi
 done
+
+# Clone or update the imagepick repository
+echo "Ensuring imagepick repository is present..."
+REPO_URL="https://github.com/miuractech/imagepick"
+DEST_DIR="/opt/imagepick"
+
+# If we're already in a git repo, skip cloning
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Current directory is a git repository. Skipping clone."
+else
+  if [ -d "$DEST_DIR/.git" ]; then
+    echo "Repository already exists at $DEST_DIR. Pulling latest changes..."
+    git -C "$DEST_DIR" fetch --all
+    git -C "$DEST_DIR" pull --ff-only
+  elif [ -d "$DEST_DIR" ]; then
+    echo "Directory $DEST_DIR exists but is not a git repository. Skipping clone."
+  else
+    echo "Cloning repository to $DEST_DIR..."
+    mkdir -p "/opt"
+    git clone "$REPO_URL" "$DEST_DIR"
+  fi
+fi
