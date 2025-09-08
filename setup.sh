@@ -57,6 +57,7 @@ else
   else
     echo "Cloning repository to $DEST_DIR..."
     mkdir -p "/opt"
+    mkdir -p "~/test"
     git clone "$REPO_URL" "$DEST_DIR"
   fi
 fi
@@ -64,14 +65,13 @@ fi
 # Copy service file to systemd directory
 echo "Installing systemd service..."
 cp /opt/imagepick/folder_watecher.service /etc/systemd/system/folder-watcher.service
-chown root:root /etc/systemd/system/folder-watcher.service
-chmod 644 /etc/systemd/system/folder-watcher.service
+
 chown root:root /opt/imagepick/listner.py
-chmod 644 /opt/imagepick/listner.py
+chmod +x /opt/imagepick/listner.py
 chown root:root /opt/imagepick/folder_watecher.service
-chmod 644 /opt/imagepick/folder_watecher.service
+chmod +x /opt/imagepick/folder_watecher.service
 chown root:root /opt/imagepick/test_execute.py
-chmod 644 /opt/imagepick/test_execute.py
+chmod +x /opt/imagepick/test_execute.py
 systemctl daemon-reload
 systemctl enable folder-watcher.service
 systemctl start folder-watcher.service
