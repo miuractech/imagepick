@@ -11,12 +11,20 @@ fi
 echo "Updating package lists..."
 apt-get update
 
-# Install python3-watchdog and postgresql-client
-echo "Installing python3-watchdog and postgresql-client..."
-apt-get install -y python3-watchdog postgresql-client
+# Install required packages
+echo "Installing required packages..."
+apt-get install -y \
+  python3-watchdog \
+  postgresql-client \
+  git \
+  curl \
+  jq \
+  sqlite3 \
+  unzip \
+  ca-certificates
 
-# Check if both packages were installed successfully
-for pkg in python3-watchdog postgresql-client; do
+# Check if all packages were installed successfully
+for pkg in python3-watchdog postgresql-client git curl jq sqlite3 unzip ca-certificates; do
   if dpkg -s "$pkg" >/dev/null 2>&1; then
     echo "$pkg installed successfully."
   else
@@ -24,3 +32,25 @@ for pkg in python3-watchdog postgresql-client; do
     exit 1
   fi
 done
+
+# Clone or update the imagepick repository
+echo "Ensuring imagepick repository is present..."
+REPO_URL="https://github.com/miuractech/imagepick"
+DEST_DIR="/opt/imagepick"
+
+# If we're already in a git repo, skip cloning
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Current directory is a git repository. Skipping clone."
+else
+  if [ -d "$DEST_DIR/.git" ]; then
+    echo "Repository already exists at $DEST_DIR. Pulling latest changes..."
+    git -C "$DEST_DIR" fetch --all
+    git -C "$DEST_DIR" pull --ff-only
+  elif [ -d "$DEST_DIR" ]; then
+    echo "Directory $DEST_DIR exists but is not a git repository. Skipping clone."
+  else
+    echo "Cloning repository to $DEST_DIR..."
+    mkdir -p "/opt"
+    git clone "$REPO_URL" "$DEST_DIR"
+  fi
+fi
