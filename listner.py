@@ -11,7 +11,7 @@ def on_new_folder(folder_path):
     print(f"New folder created: {folder_path}")
     # You can run your actual script here
     script_path = "/opt/imagepick/test_execute.py"
-    os.system(f"python3 {script_path}")
+    os.system(f"sudo python3 {script_path}")
     # Or call a function directly
 
 class FolderCreationHandler(FileSystemEventHandler):
