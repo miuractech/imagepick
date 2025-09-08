@@ -63,5 +63,6 @@ cp /opt/imagepick/folder_watecher.service /etc/systemd/system/folder-watcher.ser
 systemctl daemon-reload
 systemctl enable folder-watcher.service
 systemctl start folder-watcher.service
+systemctl daemon-reload
 
 
