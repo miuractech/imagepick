@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 ExecStart=python3 /opt/imagepick/listner.py
-WorkingDirectory=/home/sanjeevexpo1/imagepick 
+WorkingDirectory=/opt/imagepick 
 StandardOutput=journal
 Restart=always
 User=sanjeevexpo1
