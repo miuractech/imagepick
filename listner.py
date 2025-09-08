@@ -11,7 +11,7 @@ def on_new_folder(folder_path):
     print(f"New folder created: {folder_path}")
     # You can run your actual script here
     script_path = "/opt/imagepick/src/upload_manager.py"
-    os.system(f"sudo python3 {script_path} {folder_path}")
+    os.system(f"sudo python3 {script_path} \"{WATCHED_DIR}\"")
     # Or call a function directly
 
 class FolderCreationHandler(FileSystemEventHandler):
