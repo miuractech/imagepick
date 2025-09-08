@@ -14,6 +14,8 @@ apt-get update
 # Install required packages
 echo "Installing required packages..."
 apt-get install -y \
+  python3 \
+  python3-pip \
   python3-watchdog \
   postgresql-client \
   git \
@@ -24,7 +26,7 @@ apt-get install -y \
   ca-certificates
 
 # Check if all packages were installed successfully
-for pkg in python3-watchdog postgresql-client git curl jq sqlite3 unzip ca-certificates; do
+for pkg in python3 python3-pip python3-watchdog postgresql-client git curl jq sqlite3 unzip ca-certificates; do
   if dpkg -s "$pkg" >/dev/null 2>&1; then
     echo "$pkg installed successfully."
   else
@@ -54,3 +56,12 @@ else
     git clone "$REPO_URL" "$DEST_DIR"
   fi
 fi
+
+# Copy service file to systemd directory
+echo "Installing systemd service..."
+cp /opt/imagepick/folder_watecher.service /etc/systemd/system/folder-watcher.service
+systemctl daemon-reload
+systemctl enable folder-watcher.service
+systemctl start folder-watcher.service
+
+
