@@ -9,6 +9,8 @@ def create_timestamped_file(prefix="file", ext="txt", dir_path="."):
     filename = f"{prefix}_{timestamp}.{ext}"
     full_path = os.path.join(dir_path, filename)
     with open(full_path, "w") as f:
+        f.write("folder created at timestamp -> ")
+        f.write(timestamp)
         pass
     return full_path
 
