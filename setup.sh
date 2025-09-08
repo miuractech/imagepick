@@ -65,16 +65,3 @@ fi
 # Copy service file to systemd directory
 echo "Installing systemd service..."
 cp /opt/imagepick/folder_watecher.service /etc/systemd/system/folder-watcher.service
-
-chown root:root /opt/imagepick/listner.py
-chmod +x /opt/imagepick/listner.py
-chown root:root /opt/imagepick/folder_watecher.service
-chmod +x /opt/imagepick/folder_watecher.service
-chown root:root /opt/imagepick/test_execute.py
-chmod +x /opt/imagepick/test_execute.py
-systemctl daemon-reload
-systemctl enable folder-watcher.service
-systemctl start folder-watcher.service
-systemctl daemon-reload
-
-
