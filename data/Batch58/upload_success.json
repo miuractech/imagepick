@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-06-18T15:56:01.303253",
+  "folder_name": "Batch58",
+  "folder_path": "/home/rpi/gui/data/Batch58",
+  "table_name": "device_test",
+  "bucket_name": "device_test",
+  "json_upload": {
+    "success": true,
+    "filename": "stats.json",
+    "error": null,
+    "data_preview": {
+      "result": [],
+      "mean": [],
+      "standard deviation": [],
+      "variance": [],
+      "max": [],
+      "min": [],
+      "range": []
+    }
+  },
+  "image_upload": {
+    "total_images": 5,
+    "successful_uploads": 5,
+    "failed_uploads": 0,
+    "uploaded_images": [
+      {
+        "filename": "2025-06-18 14:43:35.jpg",
+        "storage_path": "Batch58/2025-06-18 14:43:35.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch58/2025-06-18 14:43:35.jpg?",
+        "size_bytes": 51517
+      },
+      {
+        "filename": "2025-06-18 14:43:33.jpg",
+        "storage_path": "Batch58/2025-06-18 14:43:33.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch58/2025-06-18 14:43:33.jpg?",
+        "size_bytes": 51517
+      },
+      {
+        "filename": "2025-06-18 14:43:37.jpg",
+        "storage_path": "Batch58/2025-06-18 14:43:37.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch58/2025-06-18 14:43:37.jpg?",
+        "size_bytes": 51517
+      },
+      {
+        "filename": "2025-06-18 14:43:38.jpg",
+        "storage_path": "Batch58/2025-06-18 14:43:38.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch58/2025-06-18 14:43:38.jpg?",
+        "size_bytes": 51517
+      },
+      {
+        "filename": "2025-06-18 14:43:36.jpg",
+        "storage_path": "Batch58/2025-06-18 14:43:36.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch58/2025-06-18 14:43:36.jpg?",
+        "size_bytes": 51517
+      }
+    ],
+    "failed_images": []
+  },
+  "summary": {
+    "overall_success": true,
+    "total_files_processed": 6,
+    "successful_operations": 6,
+    "failed_operations": 0
+  }
+}

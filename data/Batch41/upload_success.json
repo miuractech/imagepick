@@ -1,0 +1,59 @@
+{
+  "timestamp": "2025-06-18T15:56:08.726644",
+  "folder_name": "Batch41",
+  "folder_path": "/home/rpi/gui/data/Batch41",
+  "table_name": "device_test",
+  "bucket_name": "device_test",
+  "json_upload": {
+    "success": true,
+    "filename": "stats.json",
+    "error": null,
+    "data_preview": {
+      "result": [],
+      "mean": [],
+      "standard deviation": [],
+      "variance": [],
+      "max": [],
+      "min": [],
+      "range": []
+    }
+  },
+  "image_upload": {
+    "total_images": 4,
+    "successful_uploads": 4,
+    "failed_uploads": 0,
+    "uploaded_images": [
+      {
+        "filename": "2025-05-30 21:33:13.jpg",
+        "storage_path": "Batch41/2025-05-30 21:33:13.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch41/2025-05-30 21:33:13.jpg?",
+        "size_bytes": 47681
+      },
+      {
+        "filename": "2025-05-30 21:33:02.jpg",
+        "storage_path": "Batch41/2025-05-30 21:33:02.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch41/2025-05-30 21:33:02.jpg?",
+        "size_bytes": 47681
+      },
+      {
+        "filename": "2025-05-30 21:32:50.jpg",
+        "storage_path": "Batch41/2025-05-30 21:32:50.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch41/2025-05-30 21:32:50.jpg?",
+        "size_bytes": 47912
+      },
+      {
+        "filename": "2025-05-30 21:32:56.jpg",
+        "storage_path": "Batch41/2025-05-30 21:32:56.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch41/2025-05-30 21:32:56.jpg?",
+        "size_bytes": 47705
+      }
+    ],
+    "failed_images": []
+  },
+  "summary": {
+    "overall_success": true,
+    "total_files_processed": 5,
+    "successful_operations": 5,
+    "failed_operations": 0
+  }
+}

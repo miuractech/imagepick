@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-06-18T15:55:59.630423",
+  "folder_name": "118317",
+  "folder_path": "/home/rpi/gui/data/118317",
+  "table_name": "device_test",
+  "bucket_name": "device_test",
+  "json_upload": {
+    "success": false,
+    "filename": null,
+    "error": "No JSON files found in folder",
+    "data_preview": null
+  },
+  "image_upload": {
+    "total_images": 0,
+    "successful_uploads": 0,
+    "failed_uploads": 0,
+    "uploaded_images": [],
+    "failed_images": []
+  },
+  "summary": {
+    "overall_success": false,
+    "total_files_processed": 0,
+    "successful_operations": 0,
+    "failed_operations": 1
+  }
+}

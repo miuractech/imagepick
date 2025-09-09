@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-06-18T15:56:10.806264",
+  "folder_name": "Batch7",
+  "folder_path": "/home/rpi/gui/data/Batch7",
+  "table_name": "device_test",
+  "bucket_name": "device_test",
+  "json_upload": {
+    "success": true,
+    "filename": "stats.json",
+    "error": null,
+    "data_preview": {
+      "result": [],
+      "mean": [],
+      "standard deviation": [],
+      "variance": [],
+      "max": [],
+      "min": [],
+      "range": []
+    }
+  },
+  "image_upload": {
+    "total_images": 0,
+    "successful_uploads": 0,
+    "failed_uploads": 0,
+    "uploaded_images": [],
+    "failed_images": []
+  },
+  "summary": {
+    "overall_success": true,
+    "total_files_processed": 1,
+    "successful_operations": 1,
+    "failed_operations": 0
+  }
+}

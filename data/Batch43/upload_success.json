@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-06-18T15:56:07.697607",
+  "folder_name": "Batch43",
+  "folder_path": "/home/rpi/gui/data/Batch43",
+  "table_name": "device_test",
+  "bucket_name": "device_test",
+  "json_upload": {
+    "success": true,
+    "filename": "stats.json",
+    "error": null,
+    "data_preview": {
+      "result": [],
+      "mean": [],
+      "standard deviation": [],
+      "variance": [],
+      "max": [],
+      "min": [],
+      "range": []
+    }
+  },
+  "image_upload": {
+    "total_images": 2,
+    "successful_uploads": 2,
+    "failed_uploads": 0,
+    "uploaded_images": [
+      {
+        "filename": "2025-05-31 06:34:11.jpg",
+        "storage_path": "Batch43/2025-05-31 06:34:11.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch43/2025-05-31 06:34:11.jpg?",
+        "size_bytes": 45778
+      },
+      {
+        "filename": "2025-05-31 06:34:07.jpg",
+        "storage_path": "Batch43/2025-05-31 06:34:07.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch43/2025-05-31 06:34:07.jpg?",
+        "size_bytes": 45778
+      }
+    ],
+    "failed_images": []
+  },
+  "summary": {
+    "overall_success": true,
+    "total_files_processed": 3,
+    "successful_operations": 3,
+    "failed_operations": 0
+  }
+}

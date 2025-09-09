@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-06-18T15:56:03.215621",
+  "folder_name": "Batch56",
+  "folder_path": "/home/rpi/gui/data/Batch56",
+  "table_name": "device_test",
+  "bucket_name": "device_test",
+  "json_upload": {
+    "success": false,
+    "filename": null,
+    "error": "No JSON files found in folder",
+    "data_preview": null
+  },
+  "image_upload": {
+    "total_images": 4,
+    "successful_uploads": 4,
+    "failed_uploads": 0,
+    "uploaded_images": [
+      {
+        "filename": "2025-06-10 16:28:18.jpg",
+        "storage_path": "Batch56/2025-06-10 16:28:18.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch56/2025-06-10 16:28:18.jpg?",
+        "size_bytes": 46486
+      },
+      {
+        "filename": "2025-06-10 16:22:27.jpg",
+        "storage_path": "Batch56/2025-06-10 16:22:27.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch56/2025-06-10 16:22:27.jpg?",
+        "size_bytes": 36335
+      },
+      {
+        "filename": "2025-06-10 16:16:31.jpg",
+        "storage_path": "Batch56/2025-06-10 16:16:31.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch56/2025-06-10 16:16:31.jpg?",
+        "size_bytes": 43060
+      },
+      {
+        "filename": "2025-06-10 16:21:53.jpg",
+        "storage_path": "Batch56/2025-06-10 16:21:53.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch56/2025-06-10 16:21:53.jpg?",
+        "size_bytes": 44210
+      }
+    ],
+    "failed_images": []
+  },
+  "summary": {
+    "overall_success": false,
+    "total_files_processed": 4,
+    "successful_operations": 4,
+    "failed_operations": 1
+  }
+}

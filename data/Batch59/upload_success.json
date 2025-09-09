@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-06-18T15:55:59.631396",
+  "folder_name": "Batch59",
+  "folder_path": "/home/rpi/gui/data/Batch59",
+  "table_name": "device_test",
+  "bucket_name": "device_test",
+  "json_upload": {
+    "success": true,
+    "filename": "stats.json",
+    "error": null,
+    "data_preview": "{'result': [[[0, 0, 0], [92, 74, 166], [91, 73, 164], [0, 0, 0], [0, 0, 0], [98, 74, 172]]], 'mean': [[46.83, 36.83, 83.67]], 'standard deviation': [[46.88, 36.83, 83.7]], 'variance': [[100.11, 100.0,..."
+  },
+  "image_upload": {
+    "total_images": 6,
+    "successful_uploads": 6,
+    "failed_uploads": 0,
+    "uploaded_images": [
+      {
+        "filename": "2025-06-18 15:11:00.jpg",
+        "storage_path": "Batch59/2025-06-18 15:11:00.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch59/2025-06-18 15:11:00.jpg?",
+        "size_bytes": 26870
+      },
+      {
+        "filename": "2025-06-18 15:10:01.jpg",
+        "storage_path": "Batch59/2025-06-18 15:10:01.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch59/2025-06-18 15:10:01.jpg?",
+        "size_bytes": 34211
+      },
+      {
+        "filename": "2025-06-18 15:11:37.jpg",
+        "storage_path": "Batch59/2025-06-18 15:11:37.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch59/2025-06-18 15:11:37.jpg?",
+        "size_bytes": 32729
+      },
+      {
+        "filename": "2025-06-18 15:09:42.jpg",
+        "storage_path": "Batch59/2025-06-18 15:09:42.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch59/2025-06-18 15:09:42.jpg?",
+        "size_bytes": 34679
+      },
+      {
+        "filename": "2025-06-18 15:10:21.jpg",
+        "storage_path": "Batch59/2025-06-18 15:10:21.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch59/2025-06-18 15:10:21.jpg?",
+        "size_bytes": 37345
+      },
+      {
+        "filename": "2025-06-18 15:11:45.jpg",
+        "storage_path": "Batch59/2025-06-18 15:11:45.jpg",
+        "public_url": "https://owcanqgrymdruzdrttfo.supabase.co/storage/v1/object/public/devicetest/Batch59/2025-06-18 15:11:45.jpg?",
+        "size_bytes": 33515
+      }
+    ],
+    "failed_images": []
+  },
+  "summary": {
+    "overall_success": true,
+    "total_files_processed": 7,
+    "successful_operations": 7,
+    "failed_operations": 0
+  }
+}
