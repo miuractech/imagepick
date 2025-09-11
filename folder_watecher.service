@@ -3,7 +3,7 @@ Description=Start folder watcher on boot
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /opt/imagepick/listner.py
+ExecStart=sudo /usr/bin/python3 /opt/imagepick/listner.py
 WorkingDirectory=/opt/imagepick 
 StandardOutput=journal
 Restart=always
