@@ -4,7 +4,7 @@ Configuration file for the Supabase Upload Manager
 """
 
 # Database connection (for psql method)
-SUPABASE_CONNECTION_STRING = "postgresql://postgres.owcanqgrymdruzdrttfo:dG.-pDR@fF$KZ4#@aws-0-ap-south-1.pooler.supabase.com:6543/postgres"
+# SUPABASE_CONNECTION_STRING = "postgresql://postgres.owcanqgrymdruzdrttfo:dG.-pDR@fF$KZ4#@aws-0-ap-south-1.pooler.supabase.com:6543/postgres"÷
 
 # REST API settings
 SUPABASE_URL = "https://owcanqgrymdruzdrttfo.supabase.co"

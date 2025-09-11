@@ -7,7 +7,7 @@ ExecStart=/usr/bin/python3 /opt/imagepick/listner.py
 WorkingDirectory=/opt/imagepick 
 StandardOutput=journal
 Restart=always
-User=sanjeevexpo1
+User=rpi
 
 [Install]
 WantedBy=multi-user.target
