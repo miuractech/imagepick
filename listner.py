@@ -4,7 +4,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # Path to the parent directory you want to monitor
-WATCHED_DIR = "/home/rpi/test"
+WATCHED_DIR = "/home/rpi/gui/data"
 
 # This is the script or function to call when a new folder is created
 def on_new_folder(folder_path):
