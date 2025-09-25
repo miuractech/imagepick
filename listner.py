@@ -15,7 +15,7 @@ def wait_for_folder_ready(folder_path, timeout=30, check_interval=0.5):
     last_file_count = None
     last_mod_time = None
     stable_duration = 0
-    required_stable_time = 3  # Wait for 3 seconds of stability
+    required_stable_time = 5  # Wait for 5 seconds of stability (increased for safety)
     
     while time.time() - start_time < timeout:
         try:
@@ -90,9 +90,39 @@ def on_new_folder(folder_path):
     if wait_for_folder_ready(folder_path):
         print(f"Processing folder: {folder_path}")
         script_path = "/opt/imagepick/src/upload_manager_rest.py"
-        os.system(f"python3 {script_path} \"/home/rpi/gui/data\"")
+        db_path = "/opt/imagepick/upload_tracker.db"
+        
+        # Use the new force-folder feature to target this specific folder
+        command = f"python3 {script_path} \"/home/rpi/gui/data\" --force-folder \"{folder_path}\" --wait-and-retry --db-path \"{db_path}\""
+        print(f"Executing: {command}")
+        
+        result = os.system(command)
+        if result == 0:
+            print(f"✅ Successfully processed folder: {folder_path}")
+        else:
+            print(f"❌ Failed to process folder: {folder_path} (exit code: {result})")
+            
+            # Fallback: try a general scan in case the specific folder approach failed
+            print("Attempting fallback with general scan...")
+            fallback_command = f"python3 {script_path} \"/home/rpi/gui/data\" --db-path \"{db_path}\""
+            fallback_result = os.system(fallback_command)
+            if fallback_result == 0:
+                print(f"✅ Fallback scan completed successfully")
+            else:
+                print(f"❌ Fallback scan also failed (exit code: {fallback_result})")
     else:
         print(f"Skipping folder {folder_path} - not ready within timeout")
+        
+        # Even if folder readiness check fails, try to force upload it anyway
+        print(f"Attempting force upload anyway for: {folder_path}")
+        script_path = "/opt/imagepick/src/upload_manager_rest.py"
+        db_path = "/opt/imagepick/upload_tracker.db"
+        command = f"python3 {script_path} \"/home/rpi/gui/data\" --force-folder \"{folder_path}\" --db-path \"{db_path}\""
+        result = os.system(command)
+        if result == 0:
+            print(f"✅ Force upload succeeded: {folder_path}")
+        else:
+            print(f"❌ Force upload failed: {folder_path}")
 
 class FolderCreationHandler(FileSystemEventHandler):
     def on_created(self, event):

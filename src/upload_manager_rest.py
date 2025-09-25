@@ -128,34 +128,63 @@ class UploadTracker:
             """, (status, time.time(), error_message, folder_path))
             conn.commit()
     
-    def record_folder(self, folder_path: str, folder_name: str, file_count: int, file_hash: str):
+    def record_folder(self, folder_path: str, folder_name: str, file_count: int, file_hash: str, force_pending: bool = False):
         """Record a new folder or update existing folder information."""
         last_modified = os.path.getmtime(folder_path)
         
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute("""
-                INSERT OR REPLACE INTO folder_status 
-                (folder_path, folder_name, last_modified, file_count, file_hash, 
-                 upload_status, updated_at)
-                VALUES (?, ?, ?, ?, ?, 'pending', (strftime('%s', 'now')))
-            """, (folder_path, folder_name, last_modified, file_count, file_hash))
+            if force_pending:
+                # Force the folder to pending status regardless of current status
+                conn.execute("""
+                    INSERT OR REPLACE INTO folder_status 
+                    (folder_path, folder_name, last_modified, file_count, file_hash, 
+                     upload_status, retry_count, updated_at)
+                    VALUES (?, ?, ?, ?, ?, 'pending', 0, (strftime('%s', 'now')))
+                """, (folder_path, folder_name, last_modified, file_count, file_hash))
+            else:
+                # Only update if not already successfully uploaded
+                conn.execute("""
+                    INSERT OR REPLACE INTO folder_status 
+                    (folder_path, folder_name, last_modified, file_count, file_hash, 
+                     upload_status, updated_at)
+                    VALUES (?, ?, ?, ?, ?, 
+                            CASE 
+                                WHEN EXISTS(SELECT 1 FROM folder_status WHERE folder_path = ? AND upload_status = 'success')
+                                THEN 'success'
+                                ELSE 'pending'
+                            END,
+                            (strftime('%s', 'now')))
+                """, (folder_path, folder_name, last_modified, file_count, file_hash, folder_path))
             conn.commit()
     
-    def get_folders_to_process(self, base_path: str, max_retries: int = 3) -> List[Dict]:
+    def get_folders_to_process(self, base_path: str, max_retries: int = 3, include_recent: bool = True) -> List[Dict]:
         """Get list of folders that need to be processed."""
         folders_to_process = []
         
         with sqlite3.connect(self.db_path) as conn:
             # Get folders that need processing
-            cursor = conn.execute("""
-                SELECT folder_path, folder_name, last_modified, file_count, 
-                       file_hash, upload_status, retry_count
-                FROM folder_status 
-                WHERE folder_path LIKE ? AND 
-                      (upload_status IN ('pending', 'failed') OR upload_status IS NULL) AND
-                      retry_count < ?
-                ORDER BY last_modified ASC
-            """, (f"{base_path}%", max_retries))
+            if include_recent:
+                # Include recently created folders (within last hour) even if they were processed
+                recent_threshold = time.time() - 3600  # 1 hour ago
+                cursor = conn.execute("""
+                    SELECT folder_path, folder_name, last_modified, file_count, 
+                           file_hash, upload_status, retry_count
+                    FROM folder_status 
+                    WHERE folder_path LIKE ? AND 
+                          ((upload_status IN ('pending', 'failed') OR upload_status IS NULL) AND retry_count < ?) OR
+                          (last_modified > ? AND retry_count < ?)
+                    ORDER BY last_modified DESC
+                """, (f"{base_path}%", max_retries, recent_threshold, max_retries))
+            else:
+                cursor = conn.execute("""
+                    SELECT folder_path, folder_name, last_modified, file_count, 
+                           file_hash, upload_status, retry_count
+                    FROM folder_status 
+                    WHERE folder_path LIKE ? AND 
+                          (upload_status IN ('pending', 'failed') OR upload_status IS NULL) AND
+                          retry_count < ?
+                    ORDER BY last_modified ASC
+                """, (f"{base_path}%", max_retries))
             
             for row in cursor.fetchall():
                 folder_info = {
@@ -214,6 +243,35 @@ class UploadTracker:
                     WHERE batch_id = ?
                 """, (successful, failed, batch_id))
             conn.commit()
+    
+    def force_folder_for_upload(self, folder_path: str) -> bool:
+        """Force a specific folder to be marked for upload, regardless of current status."""
+        try:
+            if not os.path.exists(folder_path):
+                print(f"Folder does not exist: {folder_path}")
+                return False
+            
+            # Check if folder contains relevant files
+            files = os.listdir(folder_path)
+            has_images = any(f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp')) for f in files)
+            has_stats = 'stats.json' in files
+            
+            if not (has_images or has_stats):
+                print(f"Folder does not contain images or stats.json: {folder_path}")
+                return False
+            
+            folder_name = os.path.basename(folder_path)
+            file_count = len(files)
+            file_hash = self.calculate_folder_hash(folder_path)
+            
+            # Force record with pending status
+            self.record_folder(folder_path, folder_name, file_count, file_hash, force_pending=True)
+            print(f"Forced folder for upload: {folder_path}")
+            return True
+            
+        except Exception as e:
+            print(f"Error forcing folder for upload {folder_path}: {e}")
+            return False
 
 class SupabaseRestUploader:
     """Supabase uploader using REST API."""
@@ -572,6 +630,75 @@ class UploadManager:
             "batch_id": batch_id
         }
     
+    def force_upload_folder(self, folder_path: str, max_attempts: int = 5, retry_delay: int = 2) -> bool:
+        """Force upload a specific folder with retry mechanism."""
+        print(f"Force uploading folder: {folder_path}")
+        
+        # First, force the folder to be marked for upload
+        if not self.tracker.force_folder_for_upload(folder_path):
+            return False
+        
+        # Attempt upload with retries
+        for attempt in range(max_attempts):
+            try:
+                print(f"Upload attempt {attempt + 1}/{max_attempts}")
+                
+                # Get folder info
+                folder_info = self.tracker.get_folder_info(folder_path)
+                if not folder_info:
+                    print(f"Could not get folder info for: {folder_path}")
+                    time.sleep(retry_delay)
+                    continue
+                
+                # Add current hash to folder info
+                folder_info['current_hash'] = self.tracker.calculate_folder_hash(folder_path)
+                folder_info['current_modified'] = os.path.getmtime(folder_path)
+                
+                # Attempt upload
+                if self.uploader.upload_folder(folder_path, folder_info):
+                    print(f"✅ Successfully uploaded folder: {folder_path}")
+                    return True
+                else:
+                    print(f"❌ Upload failed for folder: {folder_path}")
+                    if attempt < max_attempts - 1:
+                        print(f"Retrying in {retry_delay} seconds...")
+                        time.sleep(retry_delay)
+                        retry_delay *= 2  # Exponential backoff
+                    
+            except Exception as e:
+                print(f"❌ Error during upload attempt {attempt + 1}: {e}")
+                if attempt < max_attempts - 1:
+                    print(f"Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+        
+        print(f"❌ Failed to upload folder after {max_attempts} attempts: {folder_path}")
+        return False
+    
+    def process_specific_folder(self, folder_path: str) -> Dict:
+        """Process a specific folder immediately."""
+        print(f"Processing specific folder: {folder_path}")
+        
+        # Force the folder to be recorded and marked for upload
+        if not self.tracker.force_folder_for_upload(folder_path):
+            return {"successful": 0, "failed": 1, "total": 1, "error": "Could not prepare folder for upload"}
+        
+        # Create a single-folder batch
+        batch_id = self.tracker.create_batch(
+            f"single_folder_{datetime.now().strftime('%Y%m%d_%H%M%S')}", 1
+        )
+        
+        # Attempt the upload
+        success = self.force_upload_folder(folder_path)
+        
+        # Update batch status
+        if success:
+            self.tracker.update_batch_status(batch_id, 1, 0, "completed")
+            return {"successful": 1, "failed": 0, "total": 1, "batch_id": batch_id}
+        else:
+            self.tracker.update_batch_status(batch_id, 0, 1, "completed")
+            return {"successful": 0, "failed": 1, "total": 1, "batch_id": batch_id}
+    
     def get_status_report(self) -> Dict:
         """Generate a status report."""
         with sqlite3.connect(self.tracker.db_path) as conn:
@@ -623,6 +750,8 @@ def main():
     parser.add_argument('--status', action='store_true', help='Show status report and exit')
     parser.add_argument('--supabase-url', default='https://owcanqgrymdruzdrttfo.supabase.co', help='Supabase URL')
     parser.add_argument('--supabase-key', default=SUPABASE_ANON_KEY, help='Supabase anon key')
+    parser.add_argument('--force-folder', help='Force upload a specific folder path')
+    parser.add_argument('--wait-and-retry', action='store_true', help='Wait for folder stability and retry on failure')
     
     args = parser.parse_args()
     
@@ -643,6 +772,38 @@ def main():
         print("\nRecent batches:")
         for batch in report['recent_batches']:
             print(f"  {batch['batch_name']}: {batch['successful_uploads']}/{batch['total_folders']} successful")
+        
+        return
+    
+    if args.force_folder:
+        # Force upload a specific folder
+        print(f"Force uploading folder: {args.force_folder}")
+        
+        if args.wait_and_retry:
+            # Wait for folder stability first (similar to listner.py)
+            print("Waiting for folder to be ready...")
+            from pathlib import Path
+            if not Path(args.force_folder).exists():
+                print(f"❌ Folder does not exist: {args.force_folder}")
+                return
+            
+            # Simple stability check
+            stable_time = 5  # Wait 5 seconds for stability
+            print(f"Waiting {stable_time} seconds for folder stability...")
+            time.sleep(stable_time)
+        
+        result = manager.process_specific_folder(args.force_folder)
+        
+        print("\n" + "="*60)
+        print("FORCE UPLOAD COMPLETED")
+        print("="*60)
+        print(f"Folder: {args.force_folder}")
+        print(f"Successful: {result['successful']}")
+        print(f"Failed: {result['failed']}")
+        if 'batch_id' in result:
+            print(f"Batch ID: {result['batch_id']}")
+        if 'error' in result:
+            print(f"Error: {result['error']}")
         
         return
     
