@@ -254,10 +254,11 @@ class UploadTracker:
             # Check if folder contains relevant files
             files = os.listdir(folder_path)
             has_images = any(f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp')) for f in files)
+            has_pdf = any(f.lower().endswith('.pdf') for f in files)
             has_stats = 'stats.json' in files
             
-            if not (has_images or has_stats):
-                print(f"Folder does not contain images or stats.json: {folder_path}")
+            if not (has_images or has_pdf or has_stats):
+                print(f"Folder does not contain images, PDFs, or stats.json: {folder_path}")
                 return False
             
             folder_name = os.path.basename(folder_path)
@@ -343,6 +344,7 @@ class SupabaseRestUploader:
             files = os.listdir(folder_path)
             image_files = []
             stats_file = None
+            pdf_file = None
             
             for file in files:
                 file_path = os.path.join(folder_path, file)
@@ -351,6 +353,8 @@ class SupabaseRestUploader:
                         image_files.append(file)
                     elif file.lower() == 'stats.json':
                         stats_file = file
+                    elif file.lower().endswith('.pdf'):
+                        pdf_file = file
             
             # Upload images to Supabase Storage
             uploaded_image_urls = []
@@ -370,6 +374,24 @@ class SupabaseRestUploader:
                     print(f"  ❌ Failed to upload image: {image_file}")
                     # Still add the filename for reference
                     uploaded_image_urls.append(image_file)
+            
+            # Upload PDF to Supabase Storage (separate bucket)
+            pdf_url = None
+            if pdf_file:
+                pdf_path = os.path.join(folder_path, pdf_file)
+                # URL encode the filename for storage path
+                encoded_pdf_filename = parse.quote(pdf_file)
+                storage_path = f"pdfs/{DEVICE_ID}/{folder_name}/{encoded_pdf_filename}"
+                
+                print(f"  📄 Uploading PDF: {pdf_file}")
+                if self.upload_pdf_to_storage(pdf_path, storage_path):
+                    # Get public URL for the uploaded PDF
+                    pdf_url = f"{self.supabase_url}/storage/v1/object/public/pdfs/{DEVICE_ID}/{folder_name}/{encoded_pdf_filename}"
+                    print(f"  ✅ PDF uploaded: {pdf_url}")
+                else:
+                    print(f"  ❌ Failed to upload PDF: {pdf_file}")
+                    # Still add the filename for reference
+                    pdf_url = pdf_file
             
             # Read stats.json if exists
             stats_data = None
@@ -400,9 +422,12 @@ class SupabaseRestUploader:
             metadata = {
                 "upload_timestamp": test_date.isoformat(),
                 "total_images": len(image_files),
+                "has_pdf": pdf_file is not None,
+                "pdf_filename": pdf_file,
                 "files_processed": files,
                 "folder_hash": folder_info.get('current_hash', folder_info['file_hash']),
                 "image_urls": uploaded_image_urls,
+                "pdf_url": pdf_url,
                 "device_id": DEVICE_ID,
                 "device_name": DEVICE_NAME,
                 "device_type": DEVICE_TYPE
@@ -413,6 +438,7 @@ class SupabaseRestUploader:
                 "folder_name": folder_name,
                 "device_id": DEVICE_ID,
                 "images": uploaded_image_urls,  # Use URLs instead of filenames
+                "pdf_url": pdf_url,  # Add PDF URL field
                 "test_results": stats_data,
                 "test_date": test_date.isoformat(),
                 "test_status": test_status,
@@ -478,6 +504,48 @@ class SupabaseRestUploader:
                     
         except Exception as e:
             print(f"Error uploading image to storage: {str(e)}")
+            return False
+
+    def upload_pdf_to_storage(self, pdf_path: str, storage_path: str) -> bool:
+        """Upload a single PDF file to Supabase Storage."""
+        try:
+            # Read the PDF file
+            with open(pdf_path, 'rb') as f:
+                pdf_data = f.read()
+            
+            # Create storage bucket for PDFs if it doesn't exist
+            self.create_storage_bucket("pdfs")
+            
+            # Upload to Supabase Storage
+            url = f"{self.supabase_url}/storage/v1/object/{storage_path}"
+            
+            headers = {
+                'Content-Type': 'application/pdf',
+                'apikey': self.supabase_key,
+                'Authorization': f'Bearer {self.supabase_key}'
+            }
+            
+            req = request.Request(
+                url,
+                data=pdf_data,
+                headers=headers,
+                method='POST'
+            )
+            
+            # Create SSL context
+            context = ssl.create_default_context()
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            
+            with request.urlopen(req, context=context, timeout=60) as response:
+                if response.status in [200, 201]:
+                    return True
+                else:
+                    print(f"PDF storage upload error: {response.status} - {response.reason}")
+                    return False
+                    
+        except Exception as e:
+            print(f"Error uploading PDF to storage: {str(e)}")
             return False
 
     def create_storage_bucket(self, bucket_name: str) -> bool:
@@ -546,11 +614,12 @@ class UploadManager:
             # Skip hidden directories
             dirs[:] = [d for d in dirs if not d.startswith('.')]
             
-            # Check if this directory contains image files or stats.json
+            # Check if this directory contains image files, PDFs, or stats.json
             has_images = any(f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp')) for f in files)
+            has_pdf = any(f.lower().endswith('.pdf') for f in files)
             has_stats = 'stats.json' in files
             
-            if has_images or has_stats:
+            if has_images or has_pdf or has_stats:
                 folder_path = root
                 folder_name = os.path.basename(root)
                 file_count = len(files)
