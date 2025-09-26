@@ -88,41 +88,41 @@ def on_new_folder(folder_path):
     
     # Wait for folder to be ready before processing
     if wait_for_folder_ready(folder_path):
-        print(f"Processing folder: {folder_path}")
+        print(f"Folder ready, processing all folders in base directory...")
         script_path = "/opt/imagepick/src/upload_manager_rest.py"
         db_path = "/opt/imagepick/upload_tracker.db"
         
-        # Use the new force-folder feature to target this specific folder
-        command = f"python3 {script_path} \"/home/rpi/gui/data\" --force-folder \"{folder_path}\" --wait-and-retry --db-path \"{db_path}\""
+        # Process all folders (with improved scanning that includes recent folders)
+        command = f"python3 {script_path} \"/home/rpi/gui/data\" --db-path \"{db_path}\""
         print(f"Executing: {command}")
         
         result = os.system(command)
         if result == 0:
-            print(f"✅ Successfully processed folder: {folder_path}")
+            print(f"✅ Successfully processed all folders (triggered by: {folder_path})")
         else:
-            print(f"❌ Failed to process folder: {folder_path} (exit code: {result})")
+            print(f"❌ Failed to process folders (exit code: {result})")
             
-            # Fallback: try a general scan in case the specific folder approach failed
-            print("Attempting fallback with general scan...")
-            fallback_command = f"python3 {script_path} \"/home/rpi/gui/data\" --db-path \"{db_path}\""
-            fallback_result = os.system(fallback_command)
-            if fallback_result == 0:
-                print(f"✅ Fallback scan completed successfully")
+            # Retry once more after a short delay
+            print("Retrying after 5 seconds...")
+            time.sleep(5)
+            retry_result = os.system(command)
+            if retry_result == 0:
+                print(f"✅ Retry successful")
             else:
-                print(f"❌ Fallback scan also failed (exit code: {fallback_result})")
+                print(f"❌ Retry also failed (exit code: {retry_result})")
     else:
-        print(f"Skipping folder {folder_path} - not ready within timeout")
+        print(f"Folder {folder_path} not ready within timeout, but attempting upload anyway...")
         
-        # Even if folder readiness check fails, try to force upload it anyway
-        print(f"Attempting force upload anyway for: {folder_path}")
+        # Even if folder readiness check fails, try to process all folders
+        print(f"Processing all folders regardless of readiness...")
         script_path = "/opt/imagepick/src/upload_manager_rest.py"
         db_path = "/opt/imagepick/upload_tracker.db"
-        command = f"python3 {script_path} \"/home/rpi/gui/data\" --force-folder \"{folder_path}\" --db-path \"{db_path}\""
+        command = f"python3 {script_path} \"/home/rpi/gui/data\" --db-path \"{db_path}\""
         result = os.system(command)
         if result == 0:
-            print(f"✅ Force upload succeeded: {folder_path}")
+            print(f"✅ Upload processing completed")
         else:
-            print(f"❌ Force upload failed: {folder_path}")
+            print(f"❌ Upload processing failed: {folder_path}")
 
 class FolderCreationHandler(FileSystemEventHandler):
     def on_created(self, event):
